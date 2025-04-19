@@ -21,14 +21,14 @@ import java.util.logging.Logger;
 public class ChatEndpoint {
 
     private static final Logger LOGGER = Logger.getLogger(ChatEndpoint.class.getName());
-    
+
     // すべてのWebSocketセッションを保持
     private static final Map<String, Session> sessions = new ConcurrentHashMap<>();
-    
-    // JSONの変換用
+
+    // JSON変換用のJsonbインスタンス
     private static final Jsonb jsonb;
-    
-    // 静的初期化ブロック
+
+    // 静的初期化ブロック：Jsonb の初期化
     static {
         try {
             jsonb = JsonbBuilder.create();
@@ -39,17 +39,17 @@ public class ChatEndpoint {
     }
 
     /**
-     * クライアントが接続したときに呼び出される
+     * クライアントが接続したときに呼び出される。
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) {
-        // ユーザー名が既に使用されていないか確認
+        // 同じユーザー名が既に使用されていないかを確認
         if (sessions.values().stream()
                 .anyMatch(s -> username.equals(s.getUserProperties().get("username")))) {
             try {
                 ChatMessage errorMessage = new ChatMessage(
-                        ChatMessage.MessageType.ERROR, 
-                        "ユーザー名「" + username + "」は既に使用されています。別の名前でお試しください。", 
+                        ChatMessage.MessageType.ERROR,
+                        "ユーザー名「" + username + "」は既に使用されています。別の名前でお試しください。",
                         "システム"
                 );
                 session.getBasicRemote().sendText(jsonb.toJson(errorMessage));
@@ -60,46 +60,40 @@ public class ChatEndpoint {
             }
         }
 
-        // ユーザー名をセッションプロパティに保存
+        // ユーザー名をセッションプロパティに設定
         session.getUserProperties().put("username", username);
         sessions.put(session.getId(), session);
-        
+
         LOGGER.info(username + "がチャットに参加しました。現在のユーザー数: " + sessions.size());
 
-        // 新しいユーザーが参加したことを通知
+        // 新規参加を全クライアントに通知
         ChatMessage joinMessage = new ChatMessage(
-                ChatMessage.MessageType.JOIN, 
-                username + "さんが入室しました", 
+                ChatMessage.MessageType.JOIN,
+                username + "さんが入室しました",
                 "システム"
         );
         broadcast(joinMessage);
-        
+
         // 現在のユーザーリストを送信
         sendUsersList();
     }
 
     /**
-     * クライアントからメッセージを受信したときに呼び出される
+     * クライアントからメッセージ受信時の処理
      */
     @OnMessage
     public void onMessage(String message, Session session) {
         String username = (String) session.getUserProperties().get("username");
-        
         LOGGER.info("メッセージを受信: " + username + " から: " + message);
-        
-        // 受信したJSONメッセージをChatMessageオブジェクトに変換
         try {
+            // JSONメッセージをChatMessageに変換
             ChatMessage chatMessage = jsonb.fromJson(message, ChatMessage.class);
-            
             if (chatMessage.getType() == ChatMessage.MessageType.CHAT) {
                 chatMessage.setSender(username);
-                // すべてのクライアントにメッセージをブロードキャスト
                 broadcast(chatMessage);
             }
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "メッセージの処理中にエラーが発生しました", e);
-            
-            // エラーメッセージを送信者に返す
             try {
                 ChatMessage errorMessage = new ChatMessage(
                         ChatMessage.MessageType.ERROR,
@@ -114,40 +108,33 @@ public class ChatEndpoint {
     }
 
     /**
-     * クライアントが切断したときに呼び出される
+     * クライアントの切断時の処理
      */
     @OnClose
     public void onClose(Session session, CloseReason closeReason) {
         String username = (String) session.getUserProperties().get("username");
         sessions.remove(session.getId());
-        
-        LOGGER.info(username + "がチャットを退出しました。理由: " + closeReason.getReasonPhrase() + 
+        LOGGER.info(username + "がチャットを退出しました。理由: " + closeReason.getReasonPhrase() +
                 "。現在のユーザー数: " + sessions.size());
-        
         if (username != null) {
-            // ユーザーが退出したことを通知
             ChatMessage leaveMessage = new ChatMessage(
-                    ChatMessage.MessageType.LEAVE, 
-                    username + "さんが退室しました", 
+                    ChatMessage.MessageType.LEAVE,
+                    username + "さんが退室しました",
                     "システム"
             );
             broadcast(leaveMessage);
-            
-            // ユーザーリストを更新
             sendUsersList();
         }
     }
 
     /**
-     * エラーが発生した場合に呼び出される
+     * エラーが発生した場合の処理
      */
     @OnError
     public void onError(Session session, Throwable throwable) {
         String username = (String) session.getUserProperties().get("username");
         LOGGER.log(Level.SEVERE, username + "のセッションでエラーが発生しました", throwable);
-        
         try {
-            // エラーが回復不能な場合はセッションを閉じる
             if (session.isOpen()) {
                 session.close(new CloseReason(CloseReason.CloseCodes.UNEXPECTED_CONDITION, "サーバーエラーが発生しました"));
             }
@@ -157,11 +144,10 @@ public class ChatEndpoint {
     }
 
     /**
-     * すべての接続クライアントにメッセージをブロードキャスト
+     * 全クライアントにメッセージをブロードキャストする
      */
     private void broadcast(ChatMessage message) {
         String json = jsonb.toJson(message);
-        
         for (Session session : sessions.values()) {
             try {
                 if (session.isOpen()) {
@@ -174,23 +160,18 @@ public class ChatEndpoint {
     }
 
     /**
-     * 現在接続中のユーザーリストを全クライアントに送信
+     * 現在接続中のユーザーリストを全クライアントに送信する
      */
     private void sendUsersList() {
         Set<String> usernames = ConcurrentHashMap.newKeySet();
-        
         for (Session session : sessions.values()) {
             String username = (String) session.getUserProperties().get("username");
             if (username != null) {
                 usernames.add(username);
             }
         }
-        
-        // ユーザーリストメッセージを作成
         String[] usersArray = usernames.toArray(new String[0]);
         ChatMessage usersListMessage = new ChatMessage(ChatMessage.MessageType.USERS, usersArray);
-        
-        // すべてのクライアントにユーザーリストを送信
         broadcast(usersListMessage);
     }
 }
