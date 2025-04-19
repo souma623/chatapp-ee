@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  wildfly:
+    build: .
+    ports:
+      - "8080:8080"  # アプリケーションポート
+      - "9990:9990"  # 管理コンソールポート
+    volumes:
+      - ./target/chatapp-ee.war:/opt/jboss/wildfly/standalone/deployments/chatapp-ee.war
+    environment:
+      - TZ=Asia/Tokyo
+    restart: unless-stopped

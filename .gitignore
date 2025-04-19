@@ -30,9 +30,82 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+# Java関連
+*.class
+*.jar
+*.war
+*.ear
 
+# Mavenビルド生成物
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE関連
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+*.iws
+.idea_modules/
+out/
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# VS Code
+.vscode/
+.code-workspace
+
+# OS関連
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# アプリケーション特有
+logs/
+*.log
+*.swp
+*.bak
 ### VS Code ###
 .vscode/
+
+### WildFly ###
+*.log
+standalone/
+
+### OS specific ###
+.DS_Store
+Thumbs.db
+
+### Maven ###
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+### Docker ###
+.docker/
 
 ### Mac OS ###
 .DS_Store

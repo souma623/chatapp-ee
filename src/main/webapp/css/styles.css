@@ -1,0 +1,769 @@
+/* ===== 基本設定 ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --primary-color: #4a6da7;
+    --primary-dark: #3a5a8f;
+    --secondary-color: #f0f4f8;
+    --text-color: #333;
+    --light-text: #666;
+    --danger-color: #dc3545;
+    --danger-dark: #c82333;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --border-color: #ddd;
+    --system-message-bg: #f0f0f0;
+    --user-message-bg: #e6f3ff;
+    --other-message-bg: #f1f1f1;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    flex: 1;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    margin-top: auto;
+}
+
+/* ===== ページ切り替え ===== */
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
+/* ===== ログインページ ===== */
+.login-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.login-container h2 {
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    font-size: 1.8rem;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(74, 109, 167, 0.2);
+}
+
+/* エラーメッセージ */
+.system-error {
+    background-color: var(--danger-color);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* ===== チャットページ ===== */
+.chat-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    height: calc(100vh - 180px);
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-header h2 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.chat-content {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+/* ===== オンラインユーザーリスト ===== */
+.online-users-container {
+    width: 25%;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+}
+
+.online-users-container h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+#online-users {
+    list-style-type: none;
+}
+
+#online-users li {
+    padding: 10px;
+    margin-bottom: 8px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+#online-users li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+#online-users li.current-user {
+    background-color: #f0f7ff;
+    border-left: 3px solid var(--primary-color);
+    font-weight: bold;
+}
+
+#online-users li.empty-list {
+    font-style: italic;
+    color: var(--light-text);
+    background-color: transparent;
+    box-shadow: none;
+    text-align: center;
+}
+
+/* ===== メッセージエリア ===== */
+.message-area-container {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+#message-area {
+    padding: 20px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.message {
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: 10px;
+    max-width: 80%;
+    word-wrap: break-word;
+    animation: message-appear 0.3s ease;
+}
+
+@keyframes message-appear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message.system-message {
+    background-color: var(--system-message-bg);
+    color: var(--light-text);
+    text-align: center;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    font-style: italic;
+}
+
+.message.user-message {
+    background-color: var(--user-message-bg);
+    margin-left: auto;
+    border-bottom-right-radius: 0;
+}
+
+.message.other-message {
+    background-color: var(--other-message-bg);
+    margin-right: auto;
+    border-bottom-left-radius: 0;
+}
+/**
+ * Jakarta EE WebSocketチャットアプリケーション
+ * スタイルシート
+ */
+
+/* 全体のリセットと基本スタイル */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --primary-color: #4a76a8;
+    --primary-dark: #3a5a8f;
+    --secondary-color: #f5f5f5;
+    --text-color: #333;
+    --light-text: #666;
+    --error-color: #dc3545;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --border-color: #ddd;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--secondary-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    flex: 1;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+footer {
+    background-color: #f0f0f0;
+    color: var(--light-text);
+    padding: 15px 0;
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ページレイアウト */
+.page {
+    display: none;
+    padding: 20px 0;
+}
+
+.page.active {
+    display: block;
+}
+
+/* ログインページ */
+.login-container {
+    max-width: 500px;
+    margin: 40px auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h2 {
+    color: var(--primary-color);
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+/* ボタンスタイル */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 118, 168, 0.3);
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+/* チャットページ */
+.chat-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+}
+
+.chat-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-header h2 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.chat-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* オンラインユーザーリスト */
+.online-users-container {
+    width: 25%;
+    background-color: #f9f9f9;
+    border-right: 1px solid var(--border-color);
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.online-users-container h3 {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#online-users {
+    list-style-type: none;
+}
+
+#online-users li {
+    padding: 8px 10px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    background-color: white;
+    border-left: 3px solid var(--primary-color);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+#online-users li.current-user {
+    background-color: #e8f0fe;
+    border-left-color: var(--primary-dark);
+    font-weight: 500;
+}
+
+#online-users li.empty-list {
+    color: var(--light-text);
+    font-style: italic;
+    border-left-color: var(--border-color);
+    text-align: center;
+}
+
+/* メッセージエリア */
+.message-area-container {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+#message-area {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: white;
+}
+
+.message {
+    margin-bottom: 15px;
+    max-width: 80%;
+    clear: both;
+    position: relative;
+}
+
+.message .metadata {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+}
+
+.message .sender {
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.message .timestamp {
+    color: var(--light-text);
+}
+
+.message .content {
+    padding: 10px 15px;
+    border-radius: 18px;
+    background-color: #f0f2f5;
+    display: inline-block;
+    word-break: break-word;
+}
+
+.message.user-message {
+    float: right;
+}
+
+.message.user-message .metadata {
+    flex-direction: row-reverse;
+}
+
+.message.user-message .content {
+    background-color: #e5f2ff;
+    border-bottom-right-radius: 5px;
+}
+
+.message.other-message {
+    float: left;
+}
+
+.message.other-message .content {
+    background-color: #f0f2f5;
+    border-bottom-left-radius: 5px;
+}
+
+.message.system-message {
+    text-align: center;
+    max-width: 100%;
+    margin: 10px 0;
+    color: var(--light-text);
+    font-style: italic;
+    background-color: #f9f9f9;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    clear: both;
+}
+
+.message.system-message.join {
+    color: var(--success-color);
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.message.system-message.leave {
+    color: var(--warning-color);
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.message.system-message.error {
+    color: var(--error-color);
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* メッセージ入力エリア */
+.message-input-container {
+    display: flex;
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+    background-color: #f9f9f9;
+}
+
+#message-input {
+    flex: 1;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+    font-size: 1rem;
+    margin-right: 10px;
+}
+
+#message-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+#send-button {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#send-button:hover {
+    background-color: var(--primary-dark);
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    .chat-content {
+        flex-direction: column;
+    }
+    
+    .online-users-container {
+        width: 100%;
+        height: 30%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .message-area-container {
+        width: 100%;
+        height: 70%;
+    }
+    
+    .message {
+        max-width: 90%;
+    }
+}
+.message .sender {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: var(--primary-dark);
+}
+
+.message .content {
+    font-size: 1rem;
+}
+
+/* ===== メッセージ入力フォーム ===== */
+.message-input-container {
+    display: flex;
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+    background-color: #f9f9f9;
+}
+
+.message-input-container input {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.message-input-container input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(74, 109, 167, 0.2);
+}
+
+/* ===== ボタンスタイル ===== */
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: var(--danger-dark);
+}
+
+/* ===== 接続ステータス ===== */
+#connection-status {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 5px;
+    z-index: 1000;
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* ===== レスポンシブデザイン ===== */
+@media (max-width: 768px) {
+    .chat-content {
+        flex-direction: column;
+    }
+    
+    .online-users-container,
+    .message-area-container {
+        width: 100%;
+    }
+    
+    .online-users-container {
+        max-height: 150px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .chat-container {
+        height: calc(100vh - 150px);
+    }
+    
+    .login-container {
+        margin: 20px auto;
+        padding: 20px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .btn {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .message {
+        max-width: 90%;
+    }
+}

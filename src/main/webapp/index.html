@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocketチャットアプリケーション</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>WebSocketチャットアプリケーション</h1>
+    </header>
+    
+    <div class="container">
+        <!-- ログイン画面 -->
+        <div id="login-page" class="page active">
+            <div class="login-container">
+                <h2>チャットに参加</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username">ユーザー名</label>
+                        <input type="text" id="username" name="username" required
+                               autofocus placeholder="ユーザー名を入力してください">
+                    </div>
+                    <button type="submit" class="btn btn-primary">参加する</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- チャット画面 -->
+        <div id="chat-page" class="page">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h2>チャットルーム</h2>
+                    <button id="logout-button" class="btn btn-danger">退室する</button>
+                </div>
+                
+                <div class="chat-content">
+                    <!-- オンラインユーザーリスト -->
+                    <div class="online-users-container">
+                        <h3>オンラインユーザー</h3>
+                        <ul id="online-users">
+                            <li class="empty-list">接続中のユーザーはいません</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- メッセージエリア -->
+                    <div class="message-area-container">
+                        <div id="message-area">
+                            <div class="message system-message">チャットルームへようこそ！</div>
+                        </div>
+                        <form id="message-form" class="message-input-container">
+                            <input type="text" id="message-input" placeholder="メッセージを入力してください..." required>
+                            <button type="submit" class="btn btn-primary">送信</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2024 WebSocketチャットアプリケーション</p>
+    </footer>
+    
+    <!-- 接続状態表示 -->
+    <div id="connection-status" class="hidden"></div>
+    
+    <!-- JavaScriptの読み込み -->
+    <script src="js/chat.js"></script>
+</body>
+</html>
